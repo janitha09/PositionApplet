@@ -1,0 +1,103 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0082)http://code.google.com/apis/earth/documentation/samples/multigeometry_example.html -->
+<html>
+    <HEAD>
+        <TITLE>multigeometry_example.html</TITLE>
+        <META content="text/html; charset=utf-8" http-equiv=Content-Type>
+        <SCRIPT type="text/javascript" src="jsapi.js"></SCRIPT>
+        <script type="text/javascript" src="ProductionCode.js"></script>
+        <script type="text/javascript" src="hardware.js"></script>
+        <script type="text/javascript" src="GeoPosition.js"></script>
+        <script type="text/javascript" src="Intersection.js"></script>
+        <script type="text/javascript" src="jquery-1.6.2.js"></script>
+        <script type="text/javascript">
+            var httpServer = new myhardware.Server();
+            var DataFromServer = new myapp.DataFromServer(httpServer);
+            var ge;
+            google.load("earth", "1");
+
+            function init() {
+                google.earth.createInstance('map3d', initCB, failureCB);
+            }
+
+            function initCB(instance) {
+
+                ge = instance;
+                ge.getWindow().setVisibility(true);
+                ge.getNavigationControl().setVisibility(ge.VISIBILITY_SHOW);
+
+                var line1 = ge.createLineString('');
+                //httpServer.setNextPosition();//new mygps.GeoPosition(48.740*Math.PI/180,-121.820*Math.PI/180,0,0,0));
+                //var pos1 = DataFromServer.getNextPosition();
+                var pos1 = new mygps.GeoPosition(48.740*Math.PI/180,-121.820*Math.PI/180,0,0,0)
+                for (i=0;i<=40;i++){
+                    line1.getCoordinates().pushLatLngAlt(DataFromServer.getLatOnLine(pos1,i*1000000)*180/Math.PI,DataFromServer.getLonOnLine(pos1,i*1000000)*180/Math.PI,0);
+                }
+                //line1.getCoordinates().pushLatLngAlt(48.740, -121.820, 0);
+                //line1.getCoordinates().pushLatLngAlt(48.800, -121.820, 0);
+                line1.setTessellate(true);
+                line1.setAltitudeMode(ge.ALTITUDE_CLAMP_TO_GROUND);
+
+                //var line2 = ge.createLineString('');
+                //httpServer.setNextPosition(new mygps.GeoPosition(48.740*Math.PI/180,-121.800*Math.PI/180,350*Math.PI/180,0,0));
+                //var pos2 = DataFromServer.getNextPosition();
+                //var pos2 = new mygps.GeoPosition(48.740*Math.PI/180,-121.800*Math.PI/180,350*Math.PI/180,0,0);
+                //for (i=0;i<=10;i++){
+                //    line2.getCoordinates().pushLatLngAlt(DataFromServer.getLatOnLine(pos2,i*1000000)*180/Math.PI,DataFromServer.getLonOnLine(pos2,i*1000000)*180/Math.PI,0);
+                //}
+                //line2.getCoordinates().pushLatLngAlt(48.740, -121.800, 0);
+                //line2.getCoordinates().pushLatLngAlt(48.800, -121.800, 0);
+                //line2.setTessellate(true);
+                //line2.setAltitudeMode(ge.ALTITUDE_CLAMP_TO_GROUND);
+
+                //var CalcIntersect = new myintersect.Intersection();
+                //var intersection = CalcIntersect.getIntersection(pos1,pos2);
+    
+                // Create the placemark.
+                //var placemark = ge.createPlacemark('');
+                //var intersectionLatitude = intersection.getLatitude()*180/Math.PI;
+                //var intersectionLongitude = intersection.getLongitude()*180/Math.PI;
+                //placemark.setName(intersectionLatitude + "," + intersectionLongitude);
+                // Set the placemark's location.  
+                //var point = ge.createPoint('');
+                //point.setLatitude(intersectionLatitude);
+                //point.setLongitude(intersectionLongitude);
+                //placemark.setGeometry(point);
+                // Add the placemark to Earth.
+                //ge.getFeatures().appendChild(placemark);
+                var multiGeometry = ge.createMultiGeometry('');
+                multiGeometry.getGeometries().appendChild(line1);
+                //multiGeometry.getGeometries().appendChild(line2);
+                //multiGeometry.getGeometries().appendChild(point);
+
+
+                var multGeoPlacemark = ge.createPlacemark('');
+                multGeoPlacemark.setGeometry(multiGeometry);
+
+                multGeoPlacemark.setStyleSelector(ge.createStyle(''));
+                var lineStyle = multGeoPlacemark.getStyleSelector().getLineStyle();
+                lineStyle.setWidth(5);
+                lineStyle.getColor().set('ffff0000');
+
+                ge.getFeatures().appendChild(multGeoPlacemark);
+
+                //multGeoPlacemark.setName('Line String');
+                //multGeoPlacemark.setDescription('Two separate lineStrings, one description.');
+
+                var la = ge.createLookAt('');
+                la.set(48.761, -121.794, 0, ge.ALTITUDE_RELATIVE_TO_GROUND, -8.541, 66.213, 8000);
+                ge.getView().setAbstractView(la);
+            }
+
+            function failureCB(errorCode) {
+            }
+
+            google.setOnLoadCallback(init);
+        </SCRIPT>
+
+        <META name=GENERATOR content="MSHTML 9.00.8112.16434">
+    </HEAD>
+    <BODY>
+        <DIV style="WIDTH: 600px; HEIGHT: 400px" id=map3d></DIV>
+    </BODY>
+</html>
