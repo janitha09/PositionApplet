@@ -25,8 +25,8 @@ myapp.DataFromServer.prototype.getLonOnLine = function (locationData,distance){
 myapp.DataFromServer.prototype.getAltOnLine = function (locationData,distance){
     return Math.tan(locationData.getAltitudeAngle())*distance + locationData.getAltitude();
 }
-myapp.DataFromServer.prototype.getNextPosition = function (){
-    return pServer.getNextPosition();
+myapp.DataFromServer.prototype.getNextPosition = function (index){
+    return pServer.getNextPosition(index);
 }
 myapp.DataFromServer.prototype.incrementCounter = function (){
     return pServer.incrementCounter();
