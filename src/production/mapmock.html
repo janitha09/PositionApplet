@@ -8,44 +8,20 @@
         <script type="text/javascript" src="http://dl.dropbox.com/u/65661364/GeoPosition.js"></script>
         <script type="text/javascript" src="http://dl.dropbox.com/u/65661364/Intersection.js"></script>
         <script type="text/javascript">
-            document.writeln("<p>position 1</p>");
- 
-            document.writeln("<p>abcdefg</p>");
             var httpServer = new myhardware.Server();
             var DataFromServer = new myapp.DataFromServer(httpServer);
-                
-            document.writeln("<p> counter "+DataFromServer.incrementCounter() + "</p>");
             httpServer.setNextPosition();
-            var pos1 = DataFromServer.getNextPosition();
-            //console.log("DataFromServer " + pos1.getLatitude());
-            document.writeln("<p>"+ JSON.stringify(pos1));//
-            document.writeln("lat " + pos1.getLatitude() + " lon " + pos1.getLongitude() + " alt " + pos1.getAltitude() + "</p>");
-            //for (i=0;i<=10;i++){       
-            //document.writeln("<p>latonline " + DataFromServer.getLatOnLine(pos1,i*1000)*180/Math.PI + " lononline " + DataFromServer.getLonOnLine(pos1,i*1000)*180/Math.PI + " altonline " + DataFromServer.getAltOnLine(pos1,i*1000) + "</p>");
-            //}
-                
-            //document.writeln("<p>lat " + pos1.getLatitude() + " lon " + pos1.getLongitude() + "</p>");
-            //httpServer.setNextPosition(new mygps.GeoPosition(48.740*Math.PI/180,-121.800*Math.PI/180,350*Math.PI/180,0,0));
-            document.writeln("<p>position 2</p>");
-            httpServer.setNextPosition();
-            var pos2 = DataFromServer.getNextPosition();
-            document.writeln("<p>"+ JSON.stringify(pos2))//
-            document.writeln("<p>lat " + pos2.getLatitude() + " lon " + pos2.getLongitude() + " alt " + pos2.getAltitude() + "</p>");
-            //for (i=0;i<=10;i++){
-            //  DataFromServer.getLatOnLine(pos2,i*1000)*180/Math.PI;
-            // DataFromServer.getLonOnLine(pos2,i*1000)*180/Math.PI;
-            //  DataFromServer.getAltOnLine(pos2,i*1000);
-            //}
-                
-            var CalcIntersect = new myintersect.Intersection();
-            var intersection = CalcIntersect.getIntersection(pos1,pos2);
-    
-            // Create the placemark.
-            var intersectionLatitude = intersection.getLatitude()*180/Math.PI;
-            var intersectionLongitude = intersection.getLongitude()*180/Math.PI;
-                
-            document.writeln("<p>latonintersect " + intersectionLatitude + " lononintersect " + intersectionLongitude);
-                
+            for (var positionIndex =0;
+            positionIndex < httpServer.getPositionQueueSize();positionIndex++){
+                //DataFromServer.incrementCounter();
+                //need to wait for user input
+                document.writeln("<p>position index " + positionIndex + "</p>");
+                var position = DataFromServer.getNextPosition(positionIndex);
+                //console.log("DataFromServer " + pos1.getLatitude());
+                document.writeln("<p>"+ JSON.stringify(position));//
+                document.writeln("lat " + position.getLatitude() + " lon " + 
+                    position.getLongitude() + " alt " + position.getAltitude() + "</p>");
+            }
         </SCRIPT>
 
         <META name=GENERATOR content="MSHTML 9.00.8112.16434">
