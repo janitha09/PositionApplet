@@ -9,8 +9,11 @@
         <script type="text/javascript" src="http://dl.dropbox.com/u/65661364/Intersection.js"></script>
         <script type="text/javascript">
             var httpServer = new myhardware.Server();
+            
             var DataFromServer = new myapp.DataFromServer(httpServer);
-            httpServer.setNextPosition();
+            document.writeln("<p>position index </p>");
+            httpServer.setNextPosition();//new mygps.GeoPosition(50*Math.PI/180,0,0,0,0));
+            document.writeln("<p>position index </p>" + httpServer.getPositionQueueSize());
             for (var positionIndex =0;
             positionIndex < httpServer.getPositionQueueSize();positionIndex++){
                 //DataFromServer.incrementCounter();
@@ -22,11 +25,15 @@
                 document.writeln("lat " + position.getLatitude() + " lon " + 
                     position.getLongitude() + " alt " + position.getAltitude() + "</p>");
             }
-        </SCRIPT>
+        </script>
 
         <META name=GENERATOR content="MSHTML 9.00.8112.16434">
     </HEAD>
     <BODY>
-        <DIV style="WIDTH: 600px; HEIGHT: 400px" id=map3d></DIV>
+        <script type="text/javascript">
+            if (typeof myapp=="undefined"){
+                document.writeln("There is no Internet connection");
+            }
+        </script>
     </BODY>
 </html>
