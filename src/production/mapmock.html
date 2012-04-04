@@ -3,37 +3,66 @@
     <HEAD>
         <TITLE>multigeometry_example.html</TITLE>
         <META content="text/html; charset=utf-8" http-equiv=Content-Type>
-        <script type="text/javascript" src="http://dl.dropbox.com/u/65661364/ProductionCode.js"></script>
+        <script type="text/javascript" src="ProductionCode.js"></script>
         <script type="text/javascript" src="http://dl.dropbox.com/u/65661364/hardware.js"></script>
         <script type="text/javascript" src="http://dl.dropbox.com/u/65661364/GeoPosition.js"></script>
         <script type="text/javascript" src="http://dl.dropbox.com/u/65661364/Intersection.js"></script>
         <script type="text/javascript">
-            var httpServer = new myhardware.Server();
             
-            var DataFromServer = new myapp.DataFromServer(httpServer);
-            document.writeln("<p>position index </p>");
-            httpServer.setNextPosition();//new mygps.GeoPosition(50*Math.PI/180,0,0,0,0));
-            document.writeln("<p>position index </p>" + httpServer.getPositionQueueSize());
-            for (var positionIndex =0;
-            positionIndex < httpServer.getPositionQueueSize();positionIndex++){
-                //DataFromServer.incrementCounter();
-                //need to wait for user input
-                document.writeln("<p>position index " + positionIndex + "</p>");
-                var position = DataFromServer.getNextPosition(positionIndex);
-                //console.log("DataFromServer " + pos1.getLatitude());
-                document.writeln("<p>"+ JSON.stringify(position));//
-                document.writeln("lat " + position.getLatitude() + " lon " + 
-                    position.getLongitude() + " alt " + position.getAltitude() + "</p>");
-            }
-        </script>
+            //            var httpServer = new myhardware.Server();
+            //            
+            //            var DataFromServer = new myapp.DataFromServer(httpServer);
+            //
+            //            httpServer.setNextPosition();//new mygps.GeoPosition(50*Math.PI/180,0,0,0,0));
+            //
+            //            for (var positionIndex =0;
+            //            positionIndex < httpServer.getPositionQueueSize();positionIndex++){
+            //                //DataFromServer.incrementCounter();
+            //                //need to wait for user input
+            //                document.writeln("<p>position index " + positionIndex + "</p>");
+            //                var position = DataFromServer.getNextPosition(positionIndex);
+            //                //console.log("DataFromServer " + pos1.getLatitude());
+            //                document.writeln("<p>"+ JSON.stringify(position));//
+            //                document.writeln("lat " + position.getLatitude() + " lon " + 
+            //                    position.getLongitude() + " alt " + position.getAltitude() + "</p>");
+            //            }
+            
+            window.onload = function(){
+                var evtHndlr = new myapp.EventHandler();
+                down = document.getElementById('GetPositionButton'); 
+ 
+                // create event handlers for mouse up and down 
+                down.onmousedown = function () { 
+                    evtHndlr.mouseDownListener(window.document.tempform.amount);
+                }
+                
+                down.onmouseup = function () { 
+                     evtHndlr.mouseUpListener();
+                }
 
-        <META name=GENERATOR content="MSHTML 9.00.8112.16434">
+            }
+
+        </script>
     </HEAD>
     <BODY>
         <script type="text/javascript">
             if (typeof myapp=="undefined"){
                 document.writeln("There is no Internet connection");
             }
+            var evtHndlr = new myapp.EventHandler();
+        </script>
+
+        <input type="button" value="Get Current Position" 
+               id="GetPositionButton"/>
+
+        <form action="#" name="tempform"> 
+            <input type=text name=amount value=6 class="text" id='amount'> 
+            <br />  
+        </form>
+        <script type="text/javascript">
+            //var getPosBtn = window.document.getElementById("GetPositionButton");
+            //var evtHndlr = new myapp.EventHandler();
+            //getPosBtn.addEventListener('onmousedown', evtHndlr.mouseDownListener(window.document.tempform.amount), false)
         </script>
     </BODY>
 </html>
