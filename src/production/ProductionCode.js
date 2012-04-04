@@ -31,3 +31,19 @@ myapp.DataFromServer.prototype.getNextPosition = function (index){
 myapp.DataFromServer.prototype.incrementCounter = function (){
     return pServer.incrementCounter();
 }
+
+myapp.EventHandler = function(){
+    var timerID = 0;
+};
+
+
+myapp.EventHandler.prototype.mouseDownListener = function(field){
+    
+    this.timerID = setInterval(function (){
+        field.value++;
+    }, 1000);
+}
+
+myapp.EventHandler.prototype.mouseUpListener = function(){
+    clearInterval(this.timerID);
+}
