@@ -4,16 +4,17 @@
         <TITLE>multigeometry_example.html</TITLE>
         <META content="text/html; charset=utf-8" http-equiv=Content-Type>
         <script type="text/javascript" src="ProductionCode.js"></script>
+        <script type="text/javascript" src="EventHandler.js"></script>
         <script type="text/javascript" src="http://dl.dropbox.com/u/65661364/hardware.js"></script>
         <script type="text/javascript" src="http://dl.dropbox.com/u/65661364/GeoPosition.js"></script>
         <script type="text/javascript" src="http://dl.dropbox.com/u/65661364/Intersection.js"></script>
         <script type="text/javascript">
             
-            //            var httpServer = new myhardware.Server();
+                        var httpServer = new myhardware.Server();
             //            
-            //            var DataFromServer = new myapp.DataFromServer(httpServer);
+                        var DataFromServer = new myapp.DataFromServer(httpServer);
             //
-            //            httpServer.setNextPosition();//new mygps.GeoPosition(50*Math.PI/180,0,0,0,0));
+                        httpServer.setNextPosition(new mygps.GeoPosition(50*Math.PI/180,0,0,0,0));
             //
             //            for (var positionIndex =0;
             //            positionIndex < httpServer.getPositionQueueSize();positionIndex++){
@@ -28,7 +29,7 @@
             //            }
             
             window.onload = function(){
-                var evtHndlr = new myapp.EventHandler();
+                var evtHndlr = new myHandler.EventHandler(DataFromServer);
                 down = document.getElementById('GetPositionButton'); 
  
                 // create event handlers for mouse up and down 
