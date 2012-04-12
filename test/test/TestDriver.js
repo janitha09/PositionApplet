@@ -1,5 +1,3 @@
-
-
 LineTest = TestCase("getLatOnLineAt0_0_0");
 LineTest.prototype.testGetLatOnLineAt0_0_0 = function(){
     var httpServer = new myhardware.Server();
@@ -148,4 +146,22 @@ ClickTest.prototype.testGetAllPositionsOnClick = function(){
     assertEquals (new mygps.GeoPosition(0,10*Math.PI/180,0,0,0),pos1);
     assertEquals (new mygps.GeoPosition(0,0,90*Math.PI/180,0,0),pos2); //no idea how javascript knows the index but if you break the order it all breaks
 }
-//I think the use case is to return an array and let the webpage deal with it
+
+ClickTest = TestCase("mousebuttonisdown");
+ClickTest.prototype.testMouseButtonIsDown = function(){
+    var httpServer = new myhardware.Server();
+    httpServer.setNextPosition(new mygps.GeoPosition(0,10*Math.PI/180,0,0,0));
+    assertEquals(1,httpServer.getPositionQueueSize());
+    var DataFromServer = new myapp.DataFromServer(httpServer);
+    var evtHndlr = new myHandler.EventHandler(DataFromServer);
+    var doc = new myMock.Document();
+    evtHndlr.mouseDownListener(doc);
+    assertEquals (0,doc.value);
+}
+
+MockTest = TestCase("getValueFromMock");
+MockTest.prototype.testGetValueFromMock = function(){
+    var doc = new myMock.Document();
+    doc.value = new mygps.GeoPosition(0,10*Math.PI/180,0,0,0);
+    assertEquals(new mygps.GeoPosition(0,10*Math.PI/180,0,0,0),doc.value);
+}
