@@ -10,11 +10,11 @@
         <script type="text/javascript" src="http://dl.dropbox.com/u/65661364/Intersection.js"></script>
         <script type="text/javascript">
             
-                        var httpServer = new myhardware.Server();
+            var httpServer = new myhardware.Server();
             //            
-                        var DataFromServer = new myapp.DataFromServer(httpServer);
+            var DataFromServer = new myapp.DataFromServer(httpServer);
             //
-                        httpServer.setNextPosition(new mygps.GeoPosition(50*Math.PI/180,0,0,0,0));
+            httpServer.setNextPosition(new mygps.GeoPosition(50*Math.PI/180,0,0,0,0));
             //
             //            for (var positionIndex =0;
             //            positionIndex < httpServer.getPositionQueueSize();positionIndex++){
@@ -38,14 +38,34 @@
                 }
                 
                 down.onmouseup = function () { 
-                     evtHndlr.mouseUpListener();
+                    evtHndlr.mouseUpListener();
                 }
 
             }
+            
+            
+            function getLocation(){
+                var gop=document.getElementById("demo");
+                if (navigator.geolocation)
+                {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                }
+                else{
+                    gop.innerHTML="Geolocation is not supported by this browser.";
+                }
+            }
+            function showPosition(position)
+            {
+                var gop=document.getElementById("demo");
+                gop.innerHTML="Latitude: " + position.coords.latitude + 
+                    "<br />Longitude: " + position.coords.longitude;	
+            }
+
 
         </script>
     </HEAD>
     <BODY>
+
         <script type="text/javascript">
             if (typeof myapp=="undefined"){
                 document.writeln("There is no Internet connection");
@@ -60,10 +80,36 @@
             <input type=text name=amount value=6 class="text" id='amount'> 
             <br />  
         </form>
+        <div>
+            <p id="demo">Click the button to get your coordinates:</p>
+            <button onclick="getLocation()">Try It</button>
+        </div>
         <script type="text/javascript">
             //var getPosBtn = window.document.getElementById("GetPositionButton");
             //var evtHndlr = new myapp.EventHandler();
             //getPosBtn.addEventListener('onmousedown', evtHndlr.mouseDownListener(window.document.tempform.amount), false)
+        </script>
+        <script type="text/javascript">
+            if (window.DeviceOrientationEvent) 
+            {  
+                console.log("DeviceOrientation is supported");  
+                window.addEventListener('deviceorientation', 
+                function(eventData) {        
+                    var LR = eventData.gamma;        
+                    var FB = eventData.beta;        
+                    var DIR = eventData.alpha;        
+                    deviceOrientationHandler(LR, FB, DIR);    
+                }, false);
+            } else {
+                alert("DeviceOrientation is Not supported on your device or browser.  Sorry.");
+            } 
+            function deviceOrientationHandler(LR, FB, DIR) {   //for webkit browser 
+                var gop=document.getElementById("demo");
+                console.log("L-R: " + LR + "F-B: " + FB + "DIR: " + DIR) ;
+                document.getElementById("imgLogo").style.webkitTransform = "rotate("+ LR +"deg) rotate3d(1,0,0, "+ (FB*-1)+"deg)";    
+                //for HTML5 standard-compliance   
+                document.getElementById("imgLogo").style.transform = "rotate("+ LR +"deg) rotate3d(1,0,0, "+ (FB*-1)+"deg)";
+            }
         </script>
     </BODY>
 </html>
