@@ -26,12 +26,54 @@
                 ge.getWindow().setVisibility(true);
                 ge.getNavigationControl().setVisibility(ge.VISIBILITY_SHOW);
 
+                GetLocation();
+            }
+            
+            function GetLocation(){
+        
+                if (navigator.geolocation) { 
+ 
+                    //Update location
+                    console.log("Waiting for a location update");
+                    navigator.geolocation.watchPosition(UpdateLocation,HandleErrors); 
+                }else{
+                    console.log("GeoLocation is not supported");
+                } 
+            }
+            function HandleErrors(error) { 
+                //handle geolocation errors and alert user 
+                switch (error.code) { 
+                    case error.PERMISSION_DENIED: alert("user did not share geolocation data"); 
+                        break; 
+ 
+                    case error.POSITION_UNAVAILABLE: alert("could not detect current position"); 
+                        break; 
+ 
+                    case error.TIMEOUT: alert("retrieving position timed out"); 
+                        break; 
+ 
+                    default: alert("unknown error"); 
+                        break; 
+                }   
+            }
+    
+            function UpdateLocation(position){
+        
+
                 var line1 = ge.createLineString('');
                 //httpServer.setNextPosition();//new mygps.GeoPosition(48.740*Math.PI/180,-121.820*Math.PI/180,0,0,0));
                 //var pos1 = DataFromServer.getNextPosition();
-                var pos1 = new mygps.GeoPosition(48.740*Math.PI/180,-121.820*Math.PI/180,0,0,0)
+                var line1lat = position.coords.latitude;
+                var line1lon = position.coords.longitude;
+                
+                console.log("GeoLocation lat: " + line1lat + " lon: " + line1lon);
+                
+                var pos1 = new mygps.GeoPosition(line1lat*1.0,line1lon*1.0,0,0,0)
+                console.log(JSON.stringify(pos1));
+                console.log("Lat on Line: " + DataFromServer.getLatOnLine(pos1,1*1000000)*180/Math.PI + " Lon on Line: " + DataFromServer.getLonOnLine(pos1,1*1000000));
                 for (i=0;i<=40;i++){
-                    line1.getCoordinates().pushLatLngAlt(DataFromServer.getLatOnLine(pos1,i*1000000)*180/Math.PI,DataFromServer.getLonOnLine(pos1,i*1000000)*180/Math.PI,0);
+                    line1.getCoordinates().pushLatLngAlt(DataFromServer.getLatOnLine(pos1,i*1000000)*180/Math.PI,DataFromServer.getLonOnLine(pos1,i*1000000),0);
+                    console.log("Lat on Line: " + DataFromServer.getLatOnLine(pos1,i*1000000)*180/Math.PI + " Lon on Line: " + DataFromServer.getLonOnLine(pos1,i*1000000));
                 }
                 //line1.getCoordinates().pushLatLngAlt(48.740, -121.820, 0);
                 //line1.getCoordinates().pushLatLngAlt(48.800, -121.820, 0);
@@ -85,11 +127,13 @@
                 //multGeoPlacemark.setDescription('Two separate lineStrings, one description.');
 
                 var la = ge.createLookAt('');
-                la.set(48.761, -121.794, 0, ge.ALTITUDE_RELATIVE_TO_GROUND, -8.541, 66.213, 8000);
+                la.set(line1lat, line1lon, 0, ge.ALTITUDE_RELATIVE_TO_GROUND, -8.541, 66.213, 8000);
                 ge.getView().setAbstractView(la);
             }
 
             function failureCB(errorCode) {
+                console.log("errorCode: " + errorCode);
+                
             }
 
             google.setOnLoadCallback(init);
