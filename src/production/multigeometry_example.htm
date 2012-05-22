@@ -27,6 +27,7 @@
                 ge.getNavigationControl().setVisibility(ge.VISIBILITY_SHOW);
 
                 GetLocation();
+                getOrientation();
             }
             
             function GetLocation(){
@@ -35,12 +36,12 @@
  
                     //Update location
                     console.log("Waiting for a location update");
-                    navigator.geolocation.watchPosition(UpdateLocation,HandleErrors); 
+                    navigator.geolocation.watchPosition(updateLocation,handleErrors); 
                 }else{
                     console.log("GeoLocation is not supported");
                 } 
             }
-            function HandleErrors(error) { 
+            function handleErrors(error) { 
                 //handle geolocation errors and alert user 
                 switch (error.code) { 
                     case error.PERMISSION_DENIED: alert("user did not share geolocation data"); 
@@ -57,26 +58,20 @@
                 }   
             }
     
-            function UpdateLocation(position){
+            var tilt = 0;
+            function updateLocation(position){
         
-
                 var line1 = ge.createLineString('');
-                //httpServer.setNextPosition();//new mygps.GeoPosition(48.740*Math.PI/180,-121.820*Math.PI/180,0,0,0));
-                //var pos1 = DataFromServer.getNextPosition();
                 var line1lat = position.coords.latitude;
                 var line1lon = position.coords.longitude;
                 
                 console.log("GeoLocation lat: " + line1lat + " lon: " + line1lon);
                 
-                var pos1 = new mygps.GeoPosition(line1lat*Math.PI/180,line1lon*Math.PI/180,0,0,0)
+                var pos1 = new mygps.GeoPosition(line1lat*Math.PI/180,line1lon*Math.PI/180,tilt,0,0)
                 console.log(JSON.stringify(pos1));
-                //console.log("Lat on Line: " + DataFromServer.getLatOnLine(pos1,1*1000000)*180/Math.PI + " Lon on Line: " + DataFromServer.getLonOnLine(pos1,1*1000000)*180/Math.PI);
                 for (i=0;i<=1;i++){
                     line1.getCoordinates().pushLatLngAlt(DataFromServer.getLatOnLine(pos1,i*1000000)*180/Math.PI,DataFromServer.getLonOnLine(pos1,i*1000000)*180/Math.PI,0);
-                    //console.log("Lat on Line: " + DataFromServer.getLatOnLine(pos1,i*1000000)*180/Math.PI + " Lon on Line: " + DataFromServer.getLonOnLine(pos1,i*1000000)*180/Math.PI);
                 }
-                //line1.getCoordinates().pushLatLngAlt(48.740, -121.820, 0);
-                //line1.getCoordinates().pushLatLngAlt(48.800, -121.820, 0);
                 line1.setTessellate(true);
                 line1.setAltitudeMode(ge.ALTITUDE_CLAMP_TO_GROUND);
 
@@ -131,6 +126,74 @@
                 ge.getView().setAbstractView(la);
             }
 
+            function getOrientation(){
+                if (window.addEventListener){ //DOM method for binding an event
+                    alert("window.addEventListener(\"load\", dothis, false)");
+                    if (window.DeviceOrientationEvent) {
+                        console.log("DeviceOrientation is supported");
+                        document.getElementById("doEvent").innerHTML = "DeviceOrientation";
+                        // Listen for the deviceorientation event and handle the raw data
+                        window.addEventListener('deviceorientation', function(eventData) {
+                            // gamma is the left-to-right tilt in degrees, where right is positive
+                            var tiltLR = eventData.gamma;
+
+                            // beta is the front-to-back tilt in degrees, where front is positive
+                            var tiltFB = eventData.beta;
+
+                            // alpha is the compass direction the device is facing in degrees
+                            var dir = eventData.alpha
+                            tilt = dir;
+
+                            // deviceorientation does not provide this data
+                            var motUD = null;
+
+                            // call our orientation event handler
+                            deviceOrientationHandler(tiltLR, tiltFB, dir, motUD);
+                        }, false);
+                    } else if (window.OrientationEvent) {
+                        document.getElementById("doEvent").innerHTML = "MozOrientation";
+                        window.addEventListener('MozOrientation', function(eventData) {
+                            // x is the left-to-right tilt from -1 to +1, so we need to convert to degrees
+                            var tiltLR = eventData.x * 90;
+
+                            // y is the front-to-back tilt from -1 to +1, so we need to convert to degrees
+                            // We also need to invert the value so tilting the device towards us (forward) 
+                            // results in a positive value. 
+                            var tiltFB = eventData.y * -90;
+
+                            // MozOrientation does not provide this data
+                            var dir = null;
+
+                            // z is the vertical acceleration of the device
+                            var motUD = eventData.z;
+    
+                            // call our orientation event handler
+                            deviceOrientationHandler(tiltLR, tiltFB, dir, motUD);
+                        }, false);
+                    } else {
+                        document.getElementById("doEvent").innerHTML = "Not supported on your device or browser."
+                    }
+                }if (window.attachEvent){ //IE exclusive method for binding an event
+                    alert("window.attachEvent(\"onload\", dothis)");
+                }if (document.getElementById){ //support older modern browsers
+                    alert("window.onload=dothis");
+                }
+    
+            }
+            
+            function deviceOrientationHandler(tiltLR, tiltFB, dir, motionUD){
+                document.getElementById("doTiltLR").innerHTML = Math.round(tiltLR);
+                document.getElementById("doTiltFB").innerHTML = Math.round(tiltFB);
+                document.getElementById("doDirection").innerHTML = Math.round(dir);
+                document.getElementById("doMotionUD").innerHTML = motionUD;
+
+                // Apply the transform to the image
+                document.getElementById("imgLogo").style.webkitTransform = "rotate(" + 
+                    tiltLR + "deg) rotate3d(1,0,0, " + (tiltFB * -1) + "deg)";
+                document.getElementById("imgLogo").style.MozTransform = "rotate(" + tiltLR + "deg)";
+                document.getElementById("imgLogo").style.transform = "rotate(" + tiltLR + 
+                    "deg) rotate3d(1,0,0, " + (tiltFB * -1) + "deg)";
+            }
             function failureCB(errorCode) {
                 console.log("errorCode: " + errorCode.message);
                 
@@ -143,5 +206,30 @@
     </HEAD>
     <BODY>
         <DIV style="WIDTH: 600px; HEIGHT: 400px" id=map3d></DIV>
+        <div class="main">
+            <h2>Device Orientation</h2>
+            <table>
+                <tr>
+                    <td>Event Supported</td>
+                    <td id="doEvent"></td>
+                </tr>
+                <tr>
+                    <td>Tilt Left/Right [tiltLR]</td>
+                    <td id="doTiltLR"></td>
+                </tr>
+                <tr>
+                    <td>Tilt Front/Back [tiltFB]</td>
+                    <td id="doTiltFB"></td>
+                </tr>
+                <tr>
+                    <td>Direction [direction]</td>
+                    <td id="doDirection"></td>
+                </tr>
+                <tr>
+                    <td>Motion Up/Down</td>
+                    <td id="doMotionUD"></td>
+                </tr>
+            </table>
+        </div>
     </BODY>
 </html>
